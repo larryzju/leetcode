@@ -1,0 +1,38 @@
+* 55. Jump Game  :array:
+
+** 解法一
+
+用位图标记下一轮可能的位置，直到所有可能结果都被走完
+
+可以优化，当最后一位变为 true，则直接返回 true
+
+#+BEGIN_SRC go
+  func canJump(nums []int) bool {
+	  marks := make([]bool, len(nums))
+	  targets := []int{0}
+
+	  for {
+		  temp := []int{}
+		  for _, idx := range targets {
+			  for i := idx; i < nums[idx]+idx+1 && i < len(nums); i++ {
+				  if !marks[i] {
+					  marks[i] = true
+					  temp = append(temp, i)  
+                                        
+					  if i == len(nums)-1 && marks[i] {
+						  return true
+					  }                             
+				  }                                                 
+			  }                                                         
+		  }                                                                 
+
+		  if len(temp) == 0 {
+			  break
+		  }
+
+		  targets = temp
+	  }
+
+	  return false
+  }
+#+END_SRC
