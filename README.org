@@ -70,6 +70,8 @@
 #+END_SRC
 * 57. Insert Intervals                                :array:segment:notfast:
 
+** solution 1.
+
 同 56 解法，但不够快: faster than 51.50% of Python3
 
 #+BEGIN_SRC python
@@ -88,4 +90,43 @@
 	      else:  
 		  res[-1][1] = s[1]  
 	  return res  
+#+END_SRC
+
+** solution 2.
+
+优化 solution 1，在 newInterval 左边和右边的 segments 不用参与合并和插入
+
+结果 faster than 84.95% of Python3
+
+#+BEGIN_SRC python
+  class Solution:
+      def insert(self, segments: List[List[int]], newInterval: List[int]) -> List[List[int]]:
+	  if len(segments) == 0:
+	      return [newInterval]
+
+	  # the left and right segments can be saved without insert
+	  x, y = 0, len(segments)
+	  for i, seg in enumerate(segments):
+	      # seg
+	      #       newInterval
+	      if seg[1] < newInterval[0]:
+		  x = i+1
+
+	      # the first segement at the right of the interval
+	      #             seg
+	      # newInterval
+	      if seg[0] > newInterval[1]:
+		  y = i
+		  break
+
+	  ss = sorted(segments[x:y] + [newInterval], key=lambda p: p[0])
+	  res = [ss[0]]         
+	  for s in ss[1:]:      
+	      if res[-1][1] >= s[1]:
+		  pass
+	      elif res[-1][1] < s[0]:
+		  res.append(s)
+	      else:
+		  res[-1][1] = s[1]
+	  return segments[:x] + res + segments[y:]
 #+END_SRC
