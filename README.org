@@ -1,3 +1,32 @@
+* 40. Combination Sum II :array:recurse:notfast:
+
+递归解法，分治。问题可以简化为求从 cs[x:] 选择元素，使其和为 sum
+
+不够快：faster than 65.04% of Python3 
+
+#+BEGIN_SRC python
+  class Solution:
+      def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
+	  cs = sorted(c for c in candidates if c <= target)
+
+	  def solve(x, t):
+	      if x >= len(cs) or cs[x] > t:
+		  return []
+
+	      if cs[x] == t:
+		  return [f'{cs[x]}']
+
+	      res = [f'{cs[x]},{subres}' for subres in solve(x+1, t-cs[x])]
+	      res.extend(solve(x+1, t))
+	      return res
+
+	  return list(map(
+		  lambda l: [int(v) for v in l],
+		  (r.split(',') for r in set(solve(0, target))))
+		  )
+#+END_SRC
+
+
 * 55. Jump Game                                        :array:badPerformance:
 
 ** 解法一
