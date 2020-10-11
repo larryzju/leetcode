@@ -1,4 +1,4 @@
-* 40. Combination Sum II :array:recurse:notfast:
+* 40. Combination Sum II                              :array:recurse:notfast:
 
 递归解法，分治。问题可以简化为求从 cs[x:] 选择元素，使其和为 sum
 
@@ -26,6 +26,88 @@
 		  )
 #+END_SRC
 
+* 41. First Missing Positive                                     :array:sort:
+
+** solution 1. sort
+
+排序后从前往后遍历，不够快 faster than 59.59% of Python3
+
+#+BEGIN_SRC python
+  class Solution:
+      def firstMissingPositive(self, nums: List[int]) -> int:
+	  ss = sorted(x for x in nums if x > 0)
+	  if len(ss) == 0:
+	      return 1
+	  n = 1
+	  i = 0
+	  while i < len(ss):
+	      if ss[i] != n:
+		  return n
+
+	      i += 1
+	      while i < len(ss) and ss[i] == n:
+		  i+=1
+
+	      n += 1
+	  return n
+#+END_SRC
+
+
+** solution 2. hash table with array
+
+更慢 faster than 8.26% of Python3
+
+#+BEGIN_SRC python
+  class Solution:
+      def firstMissingPositive(self, nums: List[int]) -> int:
+	  marks = [0 for _ in range(len(nums))]
+	  for n in nums:
+	      if n < 1 or n > len(marks):
+		  continue
+	      marks[n-1] = 1
+	  for i, m in enumerate(marks):
+	      if m != 1:
+		  return i+1
+	  return len(marks)+1
+#+END_SRC
+
+** solution 3. swap in place
+
+依旧不够快：faster than 59.59% of Python3 
+
+#+BEGIN_SRC python
+  class Solution:
+      def firstMissingPositive(self, nums: List[int]) -> int:
+	  def replace(idx):
+	      v = nums[idx]
+	      if v >= 1 and v < len(nums) and nums[v-1] != v:
+		  nums[v-1], nums[idx] = nums[idx], nums[v-1]
+		  replace(idx)
+
+	  for i in range(len(nums)):
+	      replace(i)
+
+	  for i, v in enumerate(nums):
+	      if i+1 != v:
+		  return i+1
+	  return len(nums)+1
+#+END_SRC
+
+可能是递归有额外开销，使用循环重构之，依然不够快，可能与 python runtime 有关 faster than 59.59% of Python3
+
+#+BEGIN_SRC python
+  class Solution:
+      def firstMissingPositive(self, nums: List[int]) -> int:
+	  for i in range(len(nums)):
+	      j = i
+	      while nums[j] >= 1 and nums[j] < len(nums) and nums[nums[j]-1] != nums[j]:
+		  nums[nums[j]-1], nums[j] = nums[j], nums[nums[j]-1]
+                                   
+	  for i, v in enumerate(nums):
+	      if i+1 != v:
+		  return i+1
+	  return len(nums)+1
+#+END_SRC
 
 * 55. Jump Game                                        :array:badPerformance:
 
