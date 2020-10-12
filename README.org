@@ -1,3 +1,91 @@
+* 6. ZigZag Conversion                           :array:string:tooMuchMemory:
+
+** solution 1
+
+用额外 O(n) 空间，内存使用大：Memory Usage: 14.2 MB, less than 5.34% of Python3 
+
+#+BEGIN_SRC python
+  class Solution:
+      def convert(self, s: str, numRows: int) -> str:
+	  if numRows == 1:
+	      return s
+
+	  res = []
+	  for i in range(0, len(s), numRows*2-2):
+	      res.append(s[i])
+
+	  for d in range(1, numRows-1):
+	      i = d
+	      while True:
+		  n = i + numRows*2-2
+
+		  if i < len(s):
+		      res.append(s[i])
+
+		  if n-2*d < len(s):
+		      res.append(s[n-2*d])
+		  else:
+		      break
+
+		  i = n
+
+	  for i in range(numRows - 1, len(s), numRows*2-2):
+	      res.append(s[i])
+	  return ''.join(res)
+
+#+END_SRC
+
+
+** solution 2
+
+同上，细节略有不同，Memory Usage: 14.3 MB, less than 5.34% of Python3 
+
+#+BEGIN_SRC python
+  class Solution:
+      def convert(self, s: str, numRows: int) -> str:
+	  if numRows == 1:
+	      return s
+
+	  res = ""
+	  n = numRows*2-2
+	  t = list(range(0, len(s), n))
+	  for i in range(0, numRows):
+	      for c in t:
+		  if c + i < len(s):
+		      res += s[c+i]
+
+		  if i > 0 and i < numRows-1 and c+n-i < len(s):
+		      res += s[c+n-i]
+
+	  return res
+#+END_SRC
+
+
+
+** solution 3.
+
+按行来保存结果，遍历字符串相当于往 row0, row1, row2, ..., rowN, rowN-1, ..., row1, row0, row1, row2, ... 追加数据
+
+#+BEGIN_SRC python
+class Solution:
+    def convert(self, s: str, numRows: int) -> str:
+        if numRows == 1:
+            return s
+
+        rows = ["" for _ in range(numRows)]
+        n = numRows*2-2
+        for i, c in enumerate(s):
+            t = i % n
+            if t >= numRows:
+                t = n - t
+            rows[t] += c
+
+        return ''.join(rows)
+#+END_SRC
+
+速度比之前的快，但内存使用依然不小 Memory Usage: 14.2 MB, less than 5.34% of Python3 
+
+
 * 40. Combination Sum II                              :array:recurse:notfast:
 
 递归解法，分治。问题可以简化为求从 cs[x:] 选择元素，使其和为 sum
