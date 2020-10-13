@@ -196,44 +196,61 @@ class Solution:
 	  return len(nums)+1
 #+END_SRC
 
-* 55. Jump Game                                        :array:badPerformance:
+* 42. Trapping Rain Water				     :array:max:hard:
 
-** 解法一
+考虑先找出所有的峰，计算两个峰之间的积水量。
 
-用位图标记下一轮可能的位置，直到所有可能结果都被走完
+峰的查找可以归纳为
+1. 找出先增长后减小的点
+2. 循环合并相邻的峰（中间的峰比两边的都低），直到没有可以合并的峰为止
 
-可以优化，当最后一位变为 true，则直接返回 true
+如果输入小于 3，则返回为 0（没有足够的空间积水）
 
-#+BEGIN_SRC go
-  func canJump(nums []int) bool {
-	  marks := make([]bool, len(nums))
-	  targets := []int{0}
+#+BEGIN_SRC python
+class Solution:
+    def find_peaks(self, height: List[int]) -> List[int]:
+        peaks = []
+        i = 0
+        while i+1 < len(height):
+            while i+1 < len(height) and height[i+1] >= height[i]:
+                i+=1
 
-	  for {
-		  temp := []int{}
-		  for _, idx := range targets {
-			  for i := idx; i < nums[idx]+idx+1 && i < len(nums); i++ {
-				  if !marks[i] {
-					  marks[i] = true
-					  temp = append(temp, i)  
-                                        
-					  if i == len(nums)-1 && marks[i] {
-						  return true
-					  }                             
-				  }                                                 
-			  }                                                         
-		  }                                                                 
+            peaks.append(i)
+            while i+1 < len(height) and height[i+1] < height[i]:
+                i+=1
 
-		  if len(temp) == 0 {
-			  break
-		  }
+        if height[-1] > height[-2] and peaks[-1] != len(height)-1:
+            peaks.append(len(height)-1)
 
-		  targets = temp
-	  }
+        # merge the mid peak if both sides are larger than it
+        while True:
+            peaks_to_remove = []
+            for i in range(1, len(peaks)-1):
+                if height[peaks[i-1]] >= height[peaks[i]] <= height[peaks[i+1]]:
+                    peaks_to_remove.append(i)
 
-	  return false
-  }
+            if peaks_to_remove:
+                for i in peaks_to_remove[-1::-1]:
+                    peaks.pop(i)
+            else:
+                break
+
+        return peaks
+
+    def trap(self, height: List[int]) -> int:
+        if len(height) < 3:
+            return 0
+
+        peaks = self.find_peaks(height)
+        s = 0
+        for i in range(len(peaks)-1):
+            l, r = peaks[i], peaks[i+1]
+            level = min(height[l], height[r])
+            for v in height[l:r]:
+                s += max(level-v, 0)
+        return s
 #+END_SRC
+
 * 56. Merge Intervals                                         :array:segment:
 
 维护一个严格排序的 interval 数组 ss，往后面插入新的 interval。新的 interval 有三种情况（提前已经排好序）
