@@ -778,3 +778,18 @@ func maxSideLength(mat [][]int, threshold int) int {
 Runtime: 120 ms, faster than 44.44% of Go online submissions for Maximum Side Length of a Square with Sum Less than or Equal to Threshold.
 
 
+* 1572. Matrix Diagnoal Sum                                     :half:simple:
+
+n 为奇数需要特殊处理
+
+#+BEGIN_SRC python
+  class Solution:
+      def diagonalSum(self, mat: List[List[int]]) -> int:
+	  n = len(mat)
+	  s = 0
+	  for i in range(n//2):
+	      s += mat[i][i] + mat[n-i-1][i] + mat[i][n-i-1] + mat[n-i-1][n-i-1]
+	  if n % 2 == 1:
+	      s += mat[n//2][n//2]
+	  return s
+#+END_SRC
