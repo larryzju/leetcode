@@ -345,6 +345,34 @@ class Solution:
 		  res[-1][1] = s[1]
 	  return segments[:x] + res + segments[y:]
 #+END_SRC
+* 59. Spiral Matrix II				       :matrix:array:notfast:
+
+推导每条边的长度规律为 N, N-1, N-1, N-2, N-2, ...，循环切换四个方向
+
+#+BEGIN_SRC python
+class Solution:
+    def generateMatrix(self, n: int) -> List[List[int]]:
+        res = [[0 for _ in range(n)] for _ in range(n)]
+
+        direct = (1, n, -1, -n)
+        j = 0
+
+        # the side length is N, N-1, N-1, N-2, N-2, N-3, N-3, ..., 1, 1
+        sides = []
+        for i in range(n,0,-1):
+            sides.append(i)
+            sides.append(i)
+
+        i, j, d = 1, -1, 0
+        for s in sides[1:]:
+            for _ in range(s):
+                j += direct[d]
+                res[j//n][j%n] = i
+                i += 1
+            d = (d+1) % 4
+
+        return res
+#+END_SRC
 * 93. Restore IP Addresses				   :recursive:string:
 
 递归解法
